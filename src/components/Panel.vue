@@ -9,7 +9,6 @@
     @mousedown.prevent="startDrag"
     @touchstart.prevent="startDrag"
   >
-    {{ top }}, {{ left }}, {{ cssStyle }}
   </div>
 </template>
 
@@ -40,6 +39,11 @@ export default {
       validator(value) {
         return value >= 0
       } 
+    },
+    margin: {
+      type: Number,
+      default: 0,
+      required: false,
     },
     padding: {
       type: Number,
@@ -78,8 +82,8 @@ export default {
   },
   data() {
     return {
-      top: 5,
-      left: 5,
+      top: 10,
+      left: 10,
       bottom: null,
       right: null,
 
@@ -113,9 +117,9 @@ export default {
         style['left'] = '50%'
         style['margin-left'] = -(this.width / 2) + 'px'
       } else if (this.snappings.leftEdge) {
-        style['left'] = 0
+        style['left'] = this.margin + 'px'
       } else if (this.snappings.rightEdge) {
-        style['right'] = 0
+        style['right'] = this.margin + 'px'
       } else {
         style['left'] = this.left + 'px'
       }
@@ -124,9 +128,9 @@ export default {
         style['top'] = '50%'
         style['margin-top'] = -(this.height / 2)  + 'px'
       } else if (this.snappings.topEdge) {
-        style['top'] = 0
+        style['top'] = this.margin + 'px'
       } else if (this.snappings.bottomEdge) {
-        style['bottom'] = 0
+        style['bottom'] = this.margin + 'px'
       } else {
         style['top'] = this.top + 'px'
       }
@@ -182,7 +186,7 @@ export default {
       // Top Edge
       {
         const panelEdge = y
-        const viewEdge = 0
+        const viewEdge = 0 + this.margin
         if (checkThreshold(panelEdge, viewEdge)) {
           finalY = viewEdge
           this.snappings.topEdge = true
@@ -194,7 +198,7 @@ export default {
       // Left Edge
       {
         const panelEdge = x
-        const viewEdge = 0
+        const viewEdge = 0 + this.margin
         if (checkThreshold(panelEdge, viewEdge)) {
           finalX = viewEdge
           this.snappings.leftEdge = true
@@ -206,7 +210,7 @@ export default {
       // Bottom Edge
       {
         const panelEdge = y + this.height
-        const viewEdge = document.documentElement.clientHeight
+        const viewEdge = document.documentElement.clientHeight - this.margin
         if (checkThreshold(panelEdge, viewEdge)) {
           finalY = viewEdge - this.height
           this.snappings.bottomEdge = true
@@ -218,7 +222,7 @@ export default {
       // Right Edge
       {
         const panelEdge = x + this.width
-        const viewEdge = document.documentElement.clientWidth
+        const viewEdge = document.documentElement.clientWidth - this.margin
         if (checkThreshold(panelEdge, viewEdge)) {
           finalX = viewEdge - this.width
           this.snappings.rightEdge = true
@@ -232,16 +236,13 @@ export default {
     doDrag(event) {
       const { x, y } = getCursor(event)
 
-      let { x: left, y: top } = limitPosition(
-        x - this.cursor.dx,
-        y - this.cursor.dy,
-        this.width,
-        this.height,
-      )
+      let left, top;
 
       if (this.snap) {
-        ([left, top] = this.trySnap(left, top))
+        ([left, top] = this.trySnap(x - this.cursor.dx, y - this.cursor.dy))
       }
+
+      ({ x: left, y: top } = limitPosition(left, top, this.width, this.height))
 
       this.left = left
       this.top = top

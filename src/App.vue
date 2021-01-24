@@ -5,6 +5,7 @@
     classNameDragging="panel-dragging"
     :size="32"
     :padding="4"
+    :margin="10"
     :locked="false"
     :snap="true"
   ></panel>
