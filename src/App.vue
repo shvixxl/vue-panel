@@ -1,16 +1,16 @@
 <template>
-  <base-panel
+  <panel
     class="panel"
     classNameDraggable="panel-draggable"
     classNameDragging="panel-dragging"
     :size="32"
     :padding="4"
     :locked="false"
-  ></base-panel>
+  ></panel>
 </template>
 
 <script>
-import Panel from './components/BasePanel.vue'
+import Panel from './components/Panel.vue'
 
 export default {
   name: 'App',
@@ -34,6 +34,6 @@ export default {
 .panel-dragging {
   cursor: grabbing;
   background-color: #777 !important;
-  box-shadow: 0 1rem 3rem rgba(0,0,0,.3) !important
+  box-shadow: 0 1rem 3rem rgba(0,0,0,.3) !important;
 }
 </style>

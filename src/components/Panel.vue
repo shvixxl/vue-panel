@@ -4,10 +4,10 @@
       [classNameDraggable]: draggable,
       [classNameDragging]: dragging,
     }, 'panel']"
-    :style="cssVars"
+    :style="cssStyle"
     ref="panel"
-    @mousedown="startDrag"
-    @touchstart="startDrag"
+    @mousedown.prevent="startDrag"
+    @touchstart.prevent="startDrag"
   ></div>
 </template>
 
@@ -54,8 +54,19 @@ export default {
   },
   data() {
     return {
-      top: 0,
-      left: 0,
+      top: 5,
+      left: 5,
+      bottom: null,
+      right: null,
+
+      snappings: {
+        'horizontal-center': false,
+        'vertical-center': false,
+        'top-edge': false,
+        'left-edge': false,
+        'bottom-edge': false,
+        'right-edge': false,
+      },
 
       draggable: !this.locked,
       dragging: false,
@@ -69,13 +80,36 @@ export default {
     }
   },
   computed: {
-    cssVars() {
-      return {
-        '--size': this.size + 'px',
-        '--padding': this.padding + 'px',
-        '--position-top': this.top + 'px',
-        '--position-left': this.left + 'px',
+    cssStyle() {
+      let style = {
+        'height': this.size + 'px',
+        'width': this.size + 'px',
+        'padding': this.padding + 'px',
       }
+
+      if (this.snappings['horizontal-center']) {
+        style['left'] = '50%'
+        style['margin-left'] = -(this.panelWidth / 2) + 'px'
+      } else if (this.snappings['left-edge']) {
+        style['left'] = 0
+      } else if (this.snappings['right-edge']) {
+        style['right'] = 0
+      } else {
+        style['left'] = this.left + 'px'
+      }
+
+      if (this.snappings['vertical-center']) {
+        style['top'] = '50%'
+        style['margin-top'] = -(this.panelHeight / 2)  + 'px'
+      } else if (this.snappings['top-edge']) {
+        style['top'] = 0
+      } else if (this.snappings['bottom-edge']) {
+        style['bottom'] = 0
+      } else {
+        style['top'] = this.top + 'px'
+      }
+
+      return style
     },
     panelHeight() {
       return this.size + this.padding * 2
@@ -102,8 +136,9 @@ export default {
 
       this.left = Math.min(Math.max(this.left - this.cursor.dx, 0), clientWidth - this.panelWidth)
       this.top = Math.min(Math.max(this.top - this.cursor.dy, 0), clientHeight - this.panelHeight)
+      
     },
-    startDrag() {
+    startDrag(event) {
       if (this.draggable) {
         this.dragging = true
 
@@ -132,11 +167,6 @@ export default {
 <style scoped>
 .panel {
   position: fixed;
-  top: var(--position-top);
-  left: var(--position-left);
-  height: var(--size);
-  width: var(--size);
-  padding: var(--padding);
   background-color: #eee;
 }
 
