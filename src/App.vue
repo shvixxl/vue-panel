@@ -6,6 +6,7 @@
     :size="32"
     :padding="4"
     :locked="false"
+    :snap="true"
   ></panel>
 </template>
 
