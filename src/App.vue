@@ -1,14 +1,13 @@
 <template>
-  <panel
-    class="panel"
-    classNameDraggable="panel-draggable"
-    classNameDragging="panel-dragging"
-    :size="32"
-    :padding="4"
-    :margin="10"
-    :locked="false"
-    :snap="true"
-  ></panel>
+  <div>
+    <panel
+      class="panel"
+      classNameDraggable="panel-draggable"
+      classNameDragging="panel-dragging"
+      v-bind="state"
+      :snap="snap"
+    ></panel>
+  </div>
 </template>
 
 <script>
@@ -19,6 +18,30 @@ export default {
   components: {
     Panel,
   },
+  data() {
+    return {
+      state: {
+        // Position
+        top: 10,
+        left: 10,
+
+        // Size
+        size: 64,
+
+        // State
+        snappings: [
+          'horizontal-center',
+          'vertical-center',
+        ],
+        locked: false,
+
+        // Misc
+        margin: 10,
+        padding: 4,
+      },
+      snap: true
+    }
+  }
 }
 </script>
 
@@ -27,6 +50,7 @@ export default {
   background-color: #888 !important;
   border-radius: .25rem !important;
   box-shadow: 0 .5rem 1rem rgba(0,0,0,.15) !important;
+  transition: 25ms;
 }
 
 .panel-draggable {
@@ -37,5 +61,6 @@ export default {
   cursor: grabbing;
   background-color: #777 !important;
   box-shadow: 0 1rem 3rem rgba(0,0,0,.3) !important;
+  transform: scale(1.1);
 }
 </style>
