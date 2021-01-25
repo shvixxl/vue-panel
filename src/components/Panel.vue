@@ -32,36 +32,90 @@ const limitPosition = function limitPositionWithinViewport(x, y, w=0, h=0) {
 
 export default {
   props: {
-    size: {
+    // Position
+    top: {
       type: Number,
+      required: false,
       default: 0,
       required: true,
       validator(value) {
         return value >= 0
       } 
     },
-    margin: {
+    left: {
       type: Number,
       default: 0,
+    },
+    bottom: {
+      type: Number,
       required: false,
     },
-    padding: {
+    right: {
       type: Number,
       default: 0,
       required: false,
+      default: null,
+    },
+
+    // Snappings
+    snappings: {
+      type: Array,
+      required: false,
+      default() {
+        return []
+      },
+      validator(value) {
+        for (const snapping of value) {
+          if (!Object.values(snappings).includes(snapping)) {
+            return false
+          }
+        }
+        return true
+      }
+    },
+    
+    // Size
+    size: {
+      type: Number,
+      required: false,
+      default: 32,
       validator(value) {
         return value >= 0
       }
     },
+    
+    // State
     locked: {
       type: Boolean,
       default: true,
+    },
+
+    // Misc
+    margin: {
+      type: Number,
       required: false,
     },
-    snap: {
-      type: Boolean,
-      default: false,
+    padding: {
+      type: Number,
       required: false,
+      default: 0,
+    },
+    
+    // Snap options
+    snap: {
+      type: [Boolean, Array],
+      required: false,
+      default: false,
+      validator(value) {
+        if (typeof value === 'object') {
+          for (const snapping of value) {
+            if (!Object.values(snappings).includes(snapping)) {
+              return false
+            }
+          }
+        }
+        return true
+      }
     },
     snapThreshold: {
       type: Number,
@@ -69,6 +123,7 @@ export default {
       required: false,
     },
 
+    // Stylings
     classNameDraggable: {
       type: String,
       default: 'panel-draggable',
@@ -82,18 +137,23 @@ export default {
   },
   data() {
     return {
-      top: 10,
-      left: 10,
-      bottom: null,
-      right: null,
+      state: {
+        // Position
+        top: this.top,
+        left: this.left,
+        bottom: this.bottom,
+        right: this.right,
 
-      snappings: {
-        horizontalCenter: false,
-        verticalCenter: false,
-        topEdge: false,
-        leftEdge: false,
-        bottomEdge: false,
-        rightEdge: false,
+        // Size
+        size: this.size,
+
+        // State
+        snappings: new Set(this.snappings),
+        locked: this.locked,
+
+        // Misc
+        margin: this.margin,
+        padding: this.padding,
       },
 
       draggable: !this.locked,
