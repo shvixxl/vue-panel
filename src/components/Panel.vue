@@ -28,6 +28,15 @@ const limitPosition = function limitPositionWithinViewport(x, y, w=0, h=0) {
     x: Math.min(Math.max(x, 0), clientWidth - w),
     y: Math.min(Math.max(y, 0), clientHeight - h),
   }
+
+// Available Snappings
+const snappings = {
+  horizontalCenter: 'horizontal-center',
+  verticalCenter: 'vertical-center',
+  topEdge: 'top-edge',
+  leftEdge: 'left-edge',
+  bottomEdge: 'bottom-edge',
+  rightEdge: 'right-edge',
 }
 
 export default {
