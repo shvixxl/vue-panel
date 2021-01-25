@@ -13,6 +13,7 @@
 </template>
 
 <script>
+
 const getCursor = function getCursorPositionFromEvent(event) {
   return {
     x: event.touches ? event.touches[0].clientX : event.clientX,
@@ -24,10 +25,11 @@ const limitPosition = function limitPositionWithinViewport(x, y, w=0, h=0) {
   let clientWidth = document.documentElement.clientWidth
   let clientHeight = document.documentElement.clientHeight
 
-  return {
-    x: Math.min(Math.max(x, 0), clientWidth - w),
-    y: Math.min(Math.max(y, 0), clientHeight - h),
-  }
+  return [
+    Math.min(Math.max(x, 0), clientWidth - w),
+    Math.min(Math.max(y, 0), clientHeight - h),
+  ]
+}
 
 // Available Snappings
 const snappings = {
@@ -46,22 +48,19 @@ export default {
       type: Number,
       required: false,
       default: 0,
-      required: true,
-      validator(value) {
-        return value >= 0
-      } 
     },
     left: {
       type: Number,
+      required: false,
       default: 0,
     },
     bottom: {
       type: Number,
       required: false,
+      default: null,
     },
     right: {
       type: Number,
-      default: 0,
       required: false,
       default: null,
     },
@@ -96,6 +95,7 @@ export default {
     // State
     locked: {
       type: Boolean,
+      required: false,
       default: true,
     },
 
@@ -103,6 +103,7 @@ export default {
     margin: {
       type: Number,
       required: false,
+      default: 0,
     },
     padding: {
       type: Number,
@@ -128,20 +129,20 @@ export default {
     },
     snapThreshold: {
       type: Number,
-      default: 15,
       required: false,
+      default: 15,
     },
 
     // Stylings
     classNameDraggable: {
       type: String,
-      default: 'panel-draggable',
       required: false,
+      default: 'panel-draggable',
     },
     classNameDragging: {
       type: String,
-      default: 'panel-dragging',
       required: false,
+      default: 'panel-dragging',
     },
   },
   data() {
@@ -177,40 +178,40 @@ export default {
   computed: {
     cssStyle() {
       let style = {
-        'height': this.size + 'px',
-        'width': this.size + 'px',
-        'padding': this.padding + 'px',
+        'height': this.state.size + 'px',
+        'width': this.state.size + 'px',
+        'padding': this.state.padding + 'px',
       }
 
-      if (this.snappings.horizontalCenter) {
+      if (this.isSnapped(snappings.horizontalCenter)) {
         style['left'] = '50%'
         style['margin-left'] = -(this.width / 2) + 'px'
-      } else if (this.snappings.leftEdge) {
-        style['left'] = this.margin + 'px'
-      } else if (this.snappings.rightEdge) {
-        style['right'] = this.margin + 'px'
+      } else if (this.isSnapped(snappings.leftEdge)) {
+        style['left'] = this.state.margin + 'px'
+      } else if (this.isSnapped(snappings.rightEdge)) {
+        style['right'] = this.state.margin + 'px'
       } else {
-        style['left'] = this.left + 'px'
+        style['left'] = this.state.left + 'px'
       }
 
-      if (this.snappings.verticalCenter) {
+      if (this.isSnapped(snappings.verticalCenter)) {
         style['top'] = '50%'
         style['margin-top'] = -(this.height / 2)  + 'px'
-      } else if (this.snappings.topEdge) {
-        style['top'] = this.margin + 'px'
-      } else if (this.snappings.bottomEdge) {
-        style['bottom'] = this.margin + 'px'
+      } else if (this.isSnapped(snappings.topEdge)) {
+        style['top'] = this.state.margin + 'px'
+      } else if (this.isSnapped(snappings.bottomEdge)) {
+        style['bottom'] = this.state.margin + 'px'
       } else {
-        style['top'] = this.top + 'px'
+        style['top'] = this.state.top + 'px'
       }
 
       return style
     },
     height() {
-      return this.size + this.padding * 2
+      return this.state.size + this.state.padding * 2
     },
     width() {
-      return this.size + this.padding * 2
+      return this.state.size + this.state.padding * 2
     },
   },
   methods: {
@@ -219,6 +220,35 @@ export default {
 
       this.cursor.dx = x - this.$refs.panel.offsetLeft
       this.cursor.dy = y - this.$refs.panel.offsetTop
+    },
+
+    canSnap(snap) {
+      if (snap === undefined) {
+        return this.snap !== false
+      }
+
+      let result = false
+
+      if (typeof this.snap === 'boolean') {
+        result = result || this.snap
+      } else if (typeof this.snap === 'object') {
+        result = result || this.snap.includes(snap)
+      }
+
+      result = result || this.isSnapped(snap)
+
+      return result
+    },
+    isSnapped(snap) {
+      return this.state.snappings.has(snap)
+    },
+    addSnap(snap) {
+      this.state.snappings.add(snap)
+      this.state.snappings = new Set(this.state.snappings)
+    },
+    deleteSnap(snap) {
+      this.state.snappings.delete(snap)
+      this.state.snappings = new Set(this.state.snappings)
     },
     trySnap(x, y) {
       const checkThreshold = (a, b) => {
@@ -229,92 +259,90 @@ export default {
       let finalY = y
 
       // Horizontal Center
-      {
+      if (this.canSnap(snappings.horizontalCenter)) {
         const panelMiddle = x + (this.width / 2)
         const viewMiddle = document.documentElement.clientWidth / 2
         if (checkThreshold(panelMiddle, viewMiddle)) {
           finalX = viewMiddle - (this.width / 2)
-          this.snappings.horizontalCenter = true
+          this.addSnap(snappings.horizontalCenter)
         } else {
-          this.snappings.horizontalCenter = false
+          this.deleteSnap(snappings.horizontalCenter)
         }
       }
 
       // Vertical Center
-      {
+      if (this.canSnap(snappings.verticalCenter)) {
         const panelMiddle = y + (this.height / 2)
         const viewMiddle = document.documentElement.clientHeight / 2
         if (checkThreshold(panelMiddle, viewMiddle)) {
           finalY = viewMiddle - (this.height / 2)
-          this.snappings.verticalCenter = true
+          this.addSnap(snappings.verticalCenter)
         } else {
-          this.snappings.verticalCenter = false
+          this.deleteSnap(snappings.verticalCenter)
         }
       }
 
       // Top Edge
-      {
+      if (this.canSnap(snappings.topEdge)) {
         const panelEdge = y
-        const viewEdge = 0 + this.margin
+        const viewEdge = 0 + this.state.margin
         if (checkThreshold(panelEdge, viewEdge)) {
           finalY = viewEdge
-          this.snappings.topEdge = true
+          this.addSnap(snappings.topEdge)
         } else {
-          this.snappings.topEdge = false
+          this.deleteSnap(snappings.topEdge)
         }
       }
 
       // Left Edge
-      {
+      if (this.canSnap(snappings.leftEdge)) {
         const panelEdge = x
-        const viewEdge = 0 + this.margin
+        const viewEdge = 0 + this.state.margin
         if (checkThreshold(panelEdge, viewEdge)) {
           finalX = viewEdge
-          this.snappings.leftEdge = true
+          this.addSnap(snappings.leftEdge)
         } else {
-          this.snappings.leftEdge = false
+          this.deleteSnap(snappings.leftEdge)
         }
       }
 
       // Bottom Edge
-      {
+      if (this.canSnap(snappings.bottomEdge)) {
         const panelEdge = y + this.height
-        const viewEdge = document.documentElement.clientHeight - this.margin
+        const viewEdge = document.documentElement.clientHeight - this.state.margin
         if (checkThreshold(panelEdge, viewEdge)) {
           finalY = viewEdge - this.height
-          this.snappings.bottomEdge = true
+          this.addSnap(snappings.bottomEdge)
         } else {
-          this.snappings.bottomEdge = false
+          this.deleteSnap(snappings.bottomEdge)
         }
       }
 
       // Right Edge
-      {
+      if (this.canSnap(snappings.rightEdge)) {
         const panelEdge = x + this.width
-        const viewEdge = document.documentElement.clientWidth - this.margin
+        const viewEdge = document.documentElement.clientWidth - this.state.margin
         if (checkThreshold(panelEdge, viewEdge)) {
           finalX = viewEdge - this.width
-          this.snappings.rightEdge = true
+          this.addSnap(snappings.rightEdge)
         } else {
-          this.snappings.rightEdge = false
+          this.deleteSnap(snappings.rightEdge)
         }
       }
 
       return [finalX, finalY]
     },
+
     doDrag(event) {
       const { x, y } = getCursor(event)
 
-      let left, top;
+      let left, top
 
-      if (this.snap) {
-        ([left, top] = this.trySnap(x - this.cursor.dx, y - this.cursor.dy))
+      if (this.canSnap()) {
+        [left, top] = this.trySnap(x - this.cursor.dx, y - this.cursor.dy)
       }
 
-      ({ x: left, y: top } = limitPosition(left, top, this.width, this.height))
-
-      this.left = left
-      this.top = top
+      [this.state.left, this.state.top] = limitPosition(left, top, this.width, this.height)
     },
     startDrag(event) {
       if (this.draggable) {
