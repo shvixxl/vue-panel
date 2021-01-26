@@ -21,18 +21,8 @@ const getCursor = function getCursorPositionFromEvent(event) {
   }
 }
 
-const limitPosition = function limitPositionWithinViewport(x, y, w=0, h=0) {
-  let clientWidth = document.documentElement.clientWidth
-  let clientHeight = document.documentElement.clientHeight
-
-  return [
-    Math.min(Math.max(x, 0), clientWidth - w),
-    Math.min(Math.max(y, 0), clientHeight - h),
-  ]
-}
-
-// Available Snappings
-const snappings = {
+// Available snaps
+const snaps = {
   horizontalCenter: 'horizontal-center',
   verticalCenter: 'vertical-center',
   topEdge: 'top-edge',
@@ -47,26 +37,26 @@ export default {
     top: {
       type: Number,
       required: false,
-      default: 0,
+      default: undefined,
     },
     left: {
       type: Number,
       required: false,
-      default: 0,
+      default: undefined,
     },
     bottom: {
       type: Number,
       required: false,
-      default: null,
+      default: undefined,
     },
     right: {
       type: Number,
       required: false,
-      default: null,
+      default: undefined,
     },
 
-    // Snappings
-    snappings: {
+    // Snaps
+    snaps: {
       type: Array,
       required: false,
       default() {
@@ -113,8 +103,8 @@ export default {
       default: false,
       validator(value) {
         if (typeof value === 'object') {
-          for (const snapping of value) {
-            if (!Object.values(snappings).includes(snapping)) {
+          for (const snap of value) {
+            if (!Object.values(snaps).includes(snap)) {
               return false
             }
           }
@@ -153,7 +143,7 @@ export default {
         size: this.size,
 
         // State
-        snappings: new Set(this.snappings),
+        snaps: new Set(this.snaps),
         locked: this.locked,
 
         // Misc
@@ -179,23 +169,23 @@ export default {
         'width': this.size + 'px',
       }
 
-      if (this.isSnapped(snappings.horizontalCenter)) {
+      if (this.isSnapped(snaps.horizontalCenter)) {
         style['left'] = '50%'
         style['margin-left'] = -(this.width / 2) + 'px'
-      } else if (this.isSnapped(snappings.leftEdge)) {
+      } else if (this.isSnapped(snaps.leftEdge)) {
         style['left'] = this.state.margin + 'px'
-      } else if (this.isSnapped(snappings.rightEdge)) {
+      } else if (this.isSnapped(snaps.rightEdge)) {
         style['right'] = this.state.margin + 'px'
       } else {
         style['left'] = this.state.left + 'px'
       }
 
-      if (this.isSnapped(snappings.verticalCenter)) {
+      if (this.isSnapped(snaps.verticalCenter)) {
         style['top'] = '50%'
         style['margin-top'] = -(this.height / 2)  + 'px'
-      } else if (this.isSnapped(snappings.topEdge)) {
+      } else if (this.isSnapped(snaps.topEdge)) {
         style['top'] = this.state.margin + 'px'
-      } else if (this.isSnapped(snappings.bottomEdge)) {
+      } else if (this.isSnapped(snaps.bottomEdge)) {
         style['bottom'] = this.state.margin + 'px'
       } else {
         style['top'] = this.state.top + 'px'
@@ -224,7 +214,6 @@ export default {
       this.cursor.dx = x - this.$refs.panel.offsetLeft
       this.cursor.dy = y - this.$refs.panel.offsetTop
     },
-
     
     // Snap helpers
     canSnap(snap) {
@@ -245,15 +234,15 @@ export default {
       return result
     },
     isSnapped(snap) {
-      return this.state.snappings.has(snap)
+      return this.state.snaps.has(snap)
     },
     addSnap(snap) {
-      this.state.snappings.add(snap)
-      this.state.snappings = new Set(this.state.snappings)
+      this.state.snaps.add(snap)
+      this.state.snaps = new Set(this.state.snaps)
     },
     deleteSnap(snap) {
-      this.state.snappings.delete(snap)
-      this.state.snappings = new Set(this.state.snappings)
+      this.state.snaps.delete(snap)
+      this.state.snaps = new Set(this.state.snaps)
     },
     trySnap(x, y) {
       const checkThreshold = (a, b) => {
@@ -264,74 +253,74 @@ export default {
       let finalY = y
 
       // Horizontal Center
-      if (this.canSnap(snappings.horizontalCenter)) {
+      if (this.canSnap(snaps.horizontalCenter)) {
         const panelMiddle = x + (this.width / 2)
         const viewMiddle = document.documentElement.clientWidth / 2
         if (checkThreshold(panelMiddle, viewMiddle)) {
           finalX = viewMiddle - (this.width / 2)
-          this.addSnap(snappings.horizontalCenter)
+          this.addSnap(snaps.horizontalCenter)
         } else {
-          this.deleteSnap(snappings.horizontalCenter)
+          this.deleteSnap(snaps.horizontalCenter)
         }
       }
 
       // Vertical Center
-      if (this.canSnap(snappings.verticalCenter)) {
+      if (this.canSnap(snaps.verticalCenter)) {
         const panelMiddle = y + (this.height / 2)
         const viewMiddle = document.documentElement.clientHeight / 2
         if (checkThreshold(panelMiddle, viewMiddle)) {
           finalY = viewMiddle - (this.height / 2)
-          this.addSnap(snappings.verticalCenter)
+          this.addSnap(snaps.verticalCenter)
         } else {
-          this.deleteSnap(snappings.verticalCenter)
+          this.deleteSnap(snaps.verticalCenter)
         }
       }
 
       // Top Edge
-      if (this.canSnap(snappings.topEdge)) {
+      if (this.canSnap(snaps.topEdge)) {
         const panelEdge = y
         const viewEdge = 0 + this.state.margin
         if (checkThreshold(panelEdge, viewEdge)) {
           finalY = viewEdge
-          this.addSnap(snappings.topEdge)
+          this.addSnap(snaps.topEdge)
         } else {
-          this.deleteSnap(snappings.topEdge)
+          this.deleteSnap(snaps.topEdge)
         }
       }
 
       // Left Edge
-      if (this.canSnap(snappings.leftEdge)) {
+      if (this.canSnap(snaps.leftEdge)) {
         const panelEdge = x
         const viewEdge = 0 + this.state.margin
         if (checkThreshold(panelEdge, viewEdge)) {
           finalX = viewEdge
-          this.addSnap(snappings.leftEdge)
+          this.addSnap(snaps.leftEdge)
         } else {
-          this.deleteSnap(snappings.leftEdge)
+          this.deleteSnap(snaps.leftEdge)
         }
       }
 
       // Bottom Edge
-      if (this.canSnap(snappings.bottomEdge)) {
+      if (this.canSnap(snaps.bottomEdge)) {
         const panelEdge = y + this.height
         const viewEdge = document.documentElement.clientHeight - this.state.margin
         if (checkThreshold(panelEdge, viewEdge)) {
           finalY = viewEdge - this.height
-          this.addSnap(snappings.bottomEdge)
+          this.addSnap(snaps.bottomEdge)
         } else {
-          this.deleteSnap(snappings.bottomEdge)
+          this.deleteSnap(snaps.bottomEdge)
         }
       }
 
       // Right Edge
-      if (this.canSnap(snappings.rightEdge)) {
+      if (this.canSnap(snaps.rightEdge)) {
         const panelEdge = x + this.width
         const viewEdge = document.documentElement.clientWidth - this.state.margin
         if (checkThreshold(panelEdge, viewEdge)) {
           finalX = viewEdge - this.width
-          this.addSnap(snappings.rightEdge)
+          this.addSnap(snaps.rightEdge)
         } else {
-          this.deleteSnap(snappings.rightEdge)
+          this.deleteSnap(snaps.rightEdge)
         }
       }
 
@@ -339,6 +328,16 @@ export default {
     },
 
     doDrag(event) {
+      const limitPosition = function limitPositionWithinViewport(x, y, w=0, h=0) {
+        const clientWidth = document.documentElement.clientWidth
+        const clientHeight = document.documentElement.clientHeight
+
+        return [
+          Math.min(Math.max(x, 0), clientWidth - w),
+          Math.min(Math.max(y, 0), clientHeight - h),
+        ]
+      }
+
       const { x, y } = getCursor(event)
 
       let left, top

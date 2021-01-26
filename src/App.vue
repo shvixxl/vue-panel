@@ -21,21 +21,14 @@ export default {
   data() {
     return {
       state: {
-        // Position
-        top: 10,
-        left: 10,
-
-        // Size
         size: 64,
 
-        // State
-        snappings: [
-          'horizontal-center',
-          'vertical-center',
+        snaps: [
+          'top-edge',
+          'bottom-edge',
         ],
         locked: false,
 
-        // Misc
         margin: 10,
       },
       snap: true,
