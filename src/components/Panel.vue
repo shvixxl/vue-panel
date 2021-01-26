@@ -63,10 +63,35 @@ export default {
         return []
       },
       validator(value) {
-        for (const snapping of value) {
-          if (!Object.values(snappings).includes(snapping)) {
+        for (const snap of value) {
+          if (!Object.values(snaps).includes(snap)) {
             return false
           }
+        }
+        // Can't have opposite snaps
+        if (
+          (
+            Object.values(value).includes(snaps.topEdge)
+            && Object.values(value).includes(snaps.bottomEdge)
+          ) || (
+            Object.values(value).includes(snaps.leftEdge)
+            && Object.values(value).includes(snaps.rightEdge)
+          ) || (
+            Object.values(value).includes(snaps.horizontalCenter)
+            && (
+              Object.values(value).includes(snaps.topEdge)
+              || Object.values(value).includes(snaps.bottomEdge)
+            )
+          ) || (
+            Object.values(value).includes(snaps.verticalCenter)
+            && (
+              Object.values(value).includes(snaps.leftEdge)
+              || Object.values(value).includes(snaps.rightEdge)
+            )
+          )
+        ) {
+          console.error("Panel can't be snapped to opposite snaps")
+          return false
         }
         return true
       }
