@@ -112,13 +112,6 @@ export default {
       default: true,
     },
 
-    // Misc
-    margin: {
-      type: Number,
-      required: false,
-      default: 0,
-    },
-    
     // Snap options
     snap: {
       type: [Boolean, Array],
@@ -156,9 +149,6 @@ export default {
         // State
         snaps: new Set(this.snaps),
         locked: this.locked,
-
-        // Misc
-        margin: this.margin,
       },
 
       height: undefined,
@@ -183,10 +173,10 @@ export default {
       if (this.isSnapped(snaps.horizontalCenter)) {
         style['left'] = '50%'
         style['margin-left'] = -(this.width / 2) + 'px'
-      } else if (this.isSnapped(snaps.leftEdge)) {
-        style['left'] = this.state.margin + 'px'
-      } else if (this.isSnapped(snaps.rightEdge)) {
-        style['right'] = this.state.margin + 'px'
+      } else if (this.isSnappedTo(snaps.leftEdge)) {
+        style['left'] = 0
+      } else if (this.isSnappedTo(snaps.rightEdge)) {
+        style['right'] = 0
       } else {
         style['left'] = this.state.left + 'px'
       }
@@ -194,10 +184,10 @@ export default {
       if (this.isSnapped(snaps.verticalCenter)) {
         style['top'] = '50%'
         style['margin-top'] = -(this.height / 2)  + 'px'
-      } else if (this.isSnapped(snaps.topEdge)) {
-        style['top'] = this.state.margin + 'px'
-      } else if (this.isSnapped(snaps.bottomEdge)) {
-        style['bottom'] = this.state.margin + 'px'
+      } else if (this.isSnappedTo(snaps.topEdge)) {
+        style['top'] = 0
+      } else if (this.isSnappedTo(snaps.bottomEdge)) {
+        style['bottom'] = 0
       } else {
         style['top'] = this.state.top + 'px'
       }
@@ -290,7 +280,7 @@ export default {
       // Top Edge
       if (this.canSnap(snaps.topEdge)) {
         const panelEdge = y
-        const viewEdge = 0 + this.state.margin
+        const viewEdge = 0
         if (checkThreshold(panelEdge, viewEdge)) {
           finalY = viewEdge
           this.addSnap(snaps.topEdge)
@@ -302,7 +292,7 @@ export default {
       // Left Edge
       if (this.canSnap(snaps.leftEdge)) {
         const panelEdge = x
-        const viewEdge = 0 + this.state.margin
+        const viewEdge = 0
         if (checkThreshold(panelEdge, viewEdge)) {
           finalX = viewEdge
           this.addSnap(snaps.leftEdge)
@@ -314,7 +304,7 @@ export default {
       // Bottom Edge
       if (this.canSnap(snaps.bottomEdge)) {
         const panelEdge = y + this.height
-        const viewEdge = document.documentElement.clientHeight - this.state.margin
+        const viewEdge = document.documentElement.clientHeight
         if (checkThreshold(panelEdge, viewEdge)) {
           finalY = viewEdge - this.height
           this.addSnap(snaps.bottomEdge)
@@ -326,7 +316,7 @@ export default {
       // Right Edge
       if (this.canSnap(snaps.rightEdge)) {
         const panelEdge = x + this.width
-        const viewEdge = document.documentElement.clientWidth - this.state.margin
+        const viewEdge = document.documentElement.clientWidth
         if (checkThreshold(panelEdge, viewEdge)) {
           finalX = viewEdge - this.width
           this.addSnap(snaps.rightEdge)
