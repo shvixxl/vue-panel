@@ -37,9 +37,8 @@ export default {
 
         // Misc
         margin: 10,
-        padding: 4,
       },
-      snap: true
+      snap: true,
     }
   }
 }
@@ -51,6 +50,7 @@ export default {
   border-radius: .25rem !important;
   box-shadow: 0 .5rem 1rem rgba(0,0,0,.15) !important;
   transition: 25ms;
+  padding: 8px;
 }
 
 .panel-draggable {

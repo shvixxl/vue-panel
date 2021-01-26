@@ -105,11 +105,6 @@ export default {
       required: false,
       default: 0,
     },
-    padding: {
-      type: Number,
-      required: false,
-      default: 0,
-    },
     
     // Snap options
     snap: {
@@ -163,8 +158,10 @@ export default {
 
         // Misc
         margin: this.margin,
-        padding: this.padding,
       },
+
+      height: undefined,
+      width: undefined,
 
       draggable: !this.locked,
       dragging: false,
@@ -178,9 +175,8 @@ export default {
   computed: {
     cssStyle() {
       let style = {
-        'height': this.state.size + 'px',
-        'width': this.state.size + 'px',
-        'padding': this.state.padding + 'px',
+        'height': this.size + 'px',
+        'width': this.size + 'px',
       }
 
       if (this.isSnapped(snappings.horizontalCenter)) {
@@ -207,12 +203,19 @@ export default {
 
       return style
     },
-    height() {
-      return this.state.size + this.state.padding * 2
-    },
-    width() {
-      return this.state.size + this.state.padding * 2
-    },
+  },
+  mounted() {
+    const style = window.getComputedStyle(this.$refs.panel)
+
+    this.height = 
+      this.state.size +
+      parseFloat(style.getPropertyValue('padding-left')) +
+      parseFloat(style.getPropertyValue('padding-right'))
+
+    this.width =
+      this.state.size +
+      parseFloat(style.getPropertyValue('padding-top')) +
+      parseFloat(style.getPropertyValue('padding-bottom'))
   },
   methods: {
     setCursor(event) {
@@ -222,6 +225,8 @@ export default {
       this.cursor.dy = y - this.$refs.panel.offsetTop
     },
 
+    
+    // Snap helpers
     canSnap(snap) {
       if (snap === undefined) {
         return this.snap !== false
