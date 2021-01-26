@@ -1,11 +1,12 @@
 <template>
   <div
-    :class="[{
-      [classNameDraggable]: draggable,
-      [classNameDragging]: dragging,
-    }, 'panel']"
-    :style="cssStyle"
     ref="panel"
+    class="panel"
+    :style="getCssStyle()"
+    :draggable="draggable"
+    :dragging="dragging"
+    :snapped="isSnapped"
+    :snaps="Array.from(state.snaps).join(' ')"
     @mousedown.prevent="startDrag"
     @touchstart.prevent="startDrag"
   >
@@ -141,18 +142,6 @@ export default {
       type: Number,
       required: false,
       default: 15,
-    },
-
-    // Stylings
-    classNameDraggable: {
-      type: String,
-      required: false,
-      default: 'panel-draggable',
-    },
-    classNameDragging: {
-      type: String,
-      required: false,
-      default: 'panel-dragging',
     },
   },
   data() {

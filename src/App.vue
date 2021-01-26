@@ -2,8 +2,6 @@
   <div>
     <panel
       class="panel"
-      classNameDraggable="panel-draggable"
-      classNameDragging="panel-dragging"
       v-bind="state"
       :snap="snap"
     ></panel>
@@ -24,12 +22,10 @@ export default {
         size: 64,
 
         snaps: [
-          'top-edge',
-          'bottom-edge',
+          'horizontal-center',
+          'vertical-center',
         ],
         locked: false,
-
-        margin: 10,
       },
       snap: true,
     }
@@ -39,21 +35,28 @@ export default {
 
 <style>
 .panel {
-  background-color: #888 !important;
-  border-radius: .25rem !important;
-  box-shadow: 0 .5rem 1rem rgba(0,0,0,.15) !important;
-  transition: 25ms;
+  background-color: #888;
+  border-radius: .25rem;
+  box-shadow: 0 .5rem 1rem rgba(0,0,0,.15);
   padding: 8px;
+
+  transition-property: box-shadow, transform, background-color;
+  transition-duration: 200ms;
 }
 
-.panel-draggable {
-  cursor: grab;
-}
-
-.panel-dragging {
+.panel[dragging] {
   cursor: grabbing;
-  background-color: #777 !important;
-  box-shadow: 0 1rem 3rem rgba(0,0,0,.3) !important;
-  transform: scale(1.1);
+  background-color: #777;
+  box-shadow: 0 1rem 3rem rgba(0,0,0,.3);
+  transform: scale(1.05);
+}
+
+.panel[dragging][snapped] {
+  box-shadow: 0 1rem 3rem rgba(200,0,0,.3);
+}
+
+.panel[dragging][snapped][snaps*="vertical-center"],
+.panel[dragging][snapped][snaps*="horizontal-center"] {
+  box-shadow: 0 1rem 3rem rgba(0,0,200,.3);
 }
 </style>
