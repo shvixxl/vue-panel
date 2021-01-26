@@ -59,4 +59,8 @@ export default {
 .panel[dragging][snapped][snaps*="horizontal-center"] {
   box-shadow: 0 1rem 3rem rgba(0,0,200,.3);
 }
+
+.panel[dragging]:not([snapped]) {
+  box-shadow: 0 1rem 3rem rgba(0,200,0,.3);
+}
 </style>
