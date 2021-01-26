@@ -14,13 +14,10 @@
 </template>
 
 <script>
-
-const getCursor = function getCursorPositionFromEvent(event) {
-  return {
-    x: event.touches ? event.touches[0].clientX : event.clientX,
-    y: event.touches ? event.touches[0].clientY : event.clientY,
-  }
-}
+import {
+  getCursorPositionFromEvent,
+  limitPosition
+} from '../utils'
 
 // Available snaps
 const snaps = {
@@ -394,11 +391,11 @@ export default {
   background-color: #eee;
 }
 
-.panel-draggable {
+.panel[draggable] {
   cursor: grab;
 }
 
-.panel-dragging {
+.panel[dragging] {
   cursor: grabbing;
 }
 </style>
