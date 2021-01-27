@@ -147,18 +147,6 @@ export default {
     'state.snaps': function(value, newValue) {
       this.$emit('update:snaps', Array.from(newValue))
     },
-    'state.top': function(value, newValue) {
-      this.$emit('update:top', newValue)
-    },
-    'state.left': function(value, newValue) {
-      this.$emit('update:left', newValue)
-    },
-    'state.bottom': function(value, newValue) {
-      this.$emit('update:bottom', newValue)
-    },
-    'state.right': function(value, newValue) {
-      this.$emit('update:right', newValue)
-    }
   },
   mounted() {
     const computedStyle = window.getComputedStyle(this.$refs.panel)
