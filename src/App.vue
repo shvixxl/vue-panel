@@ -10,6 +10,7 @@
 
 <script>
 import Panel from './components/Panel.vue'
+import { snaps } from './components/Panel.vue'
 
 export default {
   name: 'App',
@@ -27,8 +28,8 @@ export default {
         size: 64,
 
         snaps: [
-          'horizontal-center',
-          'vertical-center',
+          snaps.horizontalCenter,
+          snaps.verticalCenter,
         ],
         locked: false,
       },

@@ -20,7 +20,7 @@ import {
 } from '../utils'
 
 // Available snaps
-const snaps = {
+export const snaps = {
   horizontalCenter: 'horizontal-center',
   verticalCenter: 'vertical-center',
   topEdge: 'top-edge',
