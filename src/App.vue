@@ -2,7 +2,7 @@
   <div>
     <panel
       class="panel"
-      v-bind="state"
+      v-bind.sync="state"
       :snap="snap"
     ></panel>
   </div>
@@ -19,6 +19,11 @@ export default {
   data() {
     return {
       state: {
+        top: undefined,
+        left: undefined,
+        bottom: undefined,
+        right: undefined,
+        
         size: 64,
 
         snaps: [
