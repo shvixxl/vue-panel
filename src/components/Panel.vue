@@ -5,7 +5,7 @@
     :style="getCssStyle()"
     :draggable="draggable"
     :dragging="dragging"
-    :snapped="isSnapped"
+    :snapped="isSnapped()"
     :snaps="Array.from(state.snaps).join(' ')"
     @mousedown.prevent="startDrag"
     @touchstart.prevent="startDrag"
@@ -17,7 +17,7 @@
 <script>
 import {
   getCursorPositionFromEvent,
-  limitPosition
+  limitPosition,
 } from '../utils'
 
 // Available snaps
@@ -33,22 +33,12 @@ export const snaps = {
 export default {
   props: {
     // Position
-    top: {
+    x: {
       type: Number,
       required: false,
       default: undefined,
     },
-    left: {
-      type: Number,
-      required: false,
-      default: undefined,
-    },
-    bottom: {
-      type: Number,
-      required: false,
-      default: undefined,
-    },
-    right: {
+    y: {
       type: Number,
       required: false,
       default: undefined,
@@ -114,10 +104,8 @@ export default {
     return {
       state: {
         // Position
-        top: this.top,
-        left: this.left,
-        bottom: this.bottom,
-        right: this.right,
+        x: this.x,
+        y: this.y,
 
         // Size
         size: this.size,
@@ -134,14 +122,9 @@ export default {
       dragging: false,
       
       cursor: {
-        dx: undefined,
-        dy: undefined,
+        x: undefined,
+        y: undefined,
       }
-    }
-  },
-  computed: {
-    isSnapped() {
-      return this.state.snaps.size !== 0
     }
   },
   watch: {
@@ -152,12 +135,12 @@ export default {
   mounted() {
     const computedStyle = window.getComputedStyle(this.$refs.panel)
 
-    this.height = 
+    this.width = 
       this.state.size +
       parseFloat(computedStyle.getPropertyValue('padding-left')) +
       parseFloat(computedStyle.getPropertyValue('padding-right'))
 
-    this.width =
+    this.height = 
       this.state.size +
       parseFloat(computedStyle.getPropertyValue('padding-top')) +
       parseFloat(computedStyle.getPropertyValue('padding-bottom'))
@@ -173,26 +156,26 @@ export default {
         'width': this.size + 'px',
       }
 
-      if (this.isSnappedTo(snaps.horizontalCenter)) {
+      if (this.isSnapped(snaps.horizontalCenter)) {
         style['left'] = '50%'
         style['margin-left'] = -(this.width / 2) + 'px'
-      } else if (this.isSnappedTo(snaps.leftEdge)) {
+      } else if (this.isSnapped(snaps.leftEdge)) {
         style['left'] = 0
-      } else if (this.isSnappedTo(snaps.rightEdge)) {
+      } else if (this.isSnapped(snaps.rightEdge)) {
         style['right'] = 0
       } else {
-        style['left'] = this.state.left + 'px'
+        style['left'] = this.state.x + 'px'
       }
 
-      if (this.isSnappedTo(snaps.verticalCenter)) {
+      if (this.isSnapped(snaps.verticalCenter)) {
         style['top'] = '50%'
-        style['margin-top'] = -(this.height / 2)  + 'px'
-      } else if (this.isSnappedTo(snaps.topEdge)) {
+        style['margin-top'] = -(this.height / 2) + 'px'
+      } else if (this.isSnapped(snaps.topEdge)) {
         style['top'] = 0
-      } else if (this.isSnappedTo(snaps.bottomEdge)) {
+      } else if (this.isSnapped(snaps.bottomEdge)) {
         style['bottom'] = 0
       } else {
-        style['top'] = this.state.top + 'px'
+        style['top'] = this.state.y + 'px'
       }
 
       return style
@@ -204,7 +187,7 @@ export default {
       this.cursor.dx = x - this.$refs.panel.offsetLeft
       this.cursor.dy = y - this.$refs.panel.offsetTop
     },
-    getCursorOffset(event) {
+    getCursor(event) {
       const [ x, y ] = getCursorPositionFromEvent(event)
 
       return [
@@ -214,7 +197,7 @@ export default {
     },
     
     // Snap helpers
-    canSnapTo(snap) {
+    canSnap(snap=undefined) {
       if (snap === undefined) {
         return this.snap !== false
       }
@@ -227,11 +210,14 @@ export default {
         result = result || this.snap.includes(snap)
       }
 
-      result = result || this.isSnappedTo(snap)
+      result = result || this.isSnapped(snap)
 
       return result
     },
-    isSnappedTo(snap) {
+    isSnapped(snap=undefined) {
+      if (snap === undefined) {
+        return this.state.snaps.size !== 0
+      }
       return this.state.snaps.has(snap)
     },
     addSnap(snap) {
@@ -253,7 +239,7 @@ export default {
       let finalY = y
 
       // Horizontal Center
-      if (this.canSnapTo(snaps.horizontalCenter)) {
+      if (this.canSnap(snaps.horizontalCenter)) {
         const panelMiddle = x + (this.width / 2)
         const viewMiddle = document.documentElement.clientWidth / 2
         if (checkThreshold(panelMiddle, viewMiddle)) {
@@ -265,7 +251,7 @@ export default {
       }
 
       // Vertical Center
-      if (this.canSnapTo(snaps.verticalCenter)) {
+      if (this.canSnap(snaps.verticalCenter)) {
         const panelMiddle = y + (this.height / 2)
         const viewMiddle = document.documentElement.clientHeight / 2
         if (checkThreshold(panelMiddle, viewMiddle)) {
@@ -277,7 +263,7 @@ export default {
       }
 
       // Top Edge
-      if (this.canSnapTo(snaps.topEdge)) {
+      if (this.canSnap(snaps.topEdge)) {
         const panelEdge = y
         const viewEdge = 0
         if (checkThreshold(panelEdge, viewEdge)) {
@@ -289,7 +275,7 @@ export default {
       }
 
       // Left Edge
-      if (this.canSnapTo(snaps.leftEdge)) {
+      if (this.canSnap(snaps.leftEdge)) {
         const panelEdge = x
         const viewEdge = 0
         if (checkThreshold(panelEdge, viewEdge)) {
@@ -301,7 +287,7 @@ export default {
       }
 
       // Bottom Edge
-      if (this.canSnapTo(snaps.bottomEdge)) {
+      if (this.canSnap(snaps.bottomEdge)) {
         const panelEdge = y + this.height
         const viewEdge = document.documentElement.clientHeight
         if (checkThreshold(panelEdge, viewEdge)) {
@@ -313,7 +299,7 @@ export default {
       }
 
       // Right Edge
-      if (this.canSnapTo(snaps.rightEdge)) {
+      if (this.canSnap(snaps.rightEdge)) {
         const panelEdge = x + this.width
         const viewEdge = document.documentElement.clientWidth
         if (checkThreshold(panelEdge, viewEdge)) {
@@ -324,24 +310,26 @@ export default {
         }
       }
 
-      return [finalX, finalY]
+      return [ finalX, finalY ]
     },
 
     doDrag(event) {
-      let [ left, top ] = limitPosition(
-        ...this.getCursorOffset(event),
+      let [ x, y ] = limitPosition(
+        ...this.getCursor(event),
         this.width,
-        this.height
+        this.height,
       )
 
-      if (this.canSnapTo()) {
-        [ left, top ] = this.trySnap(left, top)
+      if (this.canSnap()) {
+        [ x, y ] = this.trySnap(x, y)
       }
 
-      this.state.left = left
-      this.state.top = top
-      this.emitUpdate('left')
-      this.emitUpdate('top')
+      this.state.x = x
+      this.state.y = y
+
+      this.emitUpdate('x')
+      this.emitUpdate('y')
+      
       this.$emit('dragmove')
     },
     startDrag(event) {

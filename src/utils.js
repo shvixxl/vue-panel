@@ -5,12 +5,19 @@ export function getCursorPositionFromEvent(event) {
   ]
 }
 
-export function limitPosition(x, y, w=0, h=0) {
+export function limitPosition(x, y, width=0, height=0) {
   const clientWidth = document.documentElement.clientWidth
   const clientHeight = document.documentElement.clientHeight
-  
+
   return [
-    Math.min(Math.max(x, 0), clientWidth - w),
-    Math.min(Math.max(y, 0), clientHeight - h),
+    Math.min(Math.max(x, 0), clientWidth - width),
+    Math.min(Math.max(y, 0), clientHeight - height),
+  ]
+}
+  
+export function getPercentageOfViewport(width, height) {
+  return [
+    (width / document.documentElement.clientWidth) * 100,
+    (height / document.documentElement.clientHeight) * 100,
   ]
 }

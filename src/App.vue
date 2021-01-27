@@ -22,10 +22,8 @@ export default {
   data() {
     return {
       state: {
-        top: undefined,
-        left: undefined,
-        bottom: undefined,
-        right: undefined,
+        x: 0,
+        y: 0,
         
         size: 64,
 
@@ -33,6 +31,7 @@ export default {
           snaps.horizontalCenter,
           snaps.verticalCenter,
         ],
+        
         locked: false,
       },
     }
