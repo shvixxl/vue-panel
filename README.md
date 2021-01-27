@@ -1,4 +1,4 @@
-# vue-dockbar
+# vue-panel
 
 ## Project setup
 ```
