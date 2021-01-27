@@ -10,6 +10,7 @@
     @mousedown.prevent="startDrag"
     @touchstart.prevent="startDrag"
   >
+    <slot />
   </div>
 </template>
 

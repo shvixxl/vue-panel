@@ -4,7 +4,9 @@
       class="panel"
       v-bind.sync="state"
       :snap="true"
-    ></panel>
+    >
+      <div class="text">DRAG ME</div>
+    </panel>
   </div>
 </template>
 
@@ -40,8 +42,8 @@ export default {
 
 <style>
 .panel {
-  background-color: #888;
-  border-radius: .25rem;
+  background-color: gray;
+  border-radius: .5rem;
   box-shadow: 0 0 1rem rgba(0,0,0,.15);
   padding: 8px;
 
@@ -51,7 +53,7 @@ export default {
 
 .panel[dragging] {
   cursor: grabbing;
-  background-color: #777;
+  background-color: dimgray;
   box-shadow: 0 0 3rem rgba(0,0,0,.3);
   transform: scale(1.05);
 }
@@ -89,5 +91,16 @@ export default {
 
 .panel[dragging]:not([snapped]) {
   box-shadow: 0 0 3rem rgba(0,200,0,.3);
+}
+
+.text {
+  display: flex;
+  height: 100%;
+  align-items: center;
+
+  color: white;
+  font-size: 2em;
+  font-weight: bold;
+  text-align: center;
 }
 </style>
