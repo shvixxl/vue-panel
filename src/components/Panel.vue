@@ -174,6 +174,10 @@ export default {
       parseFloat(computedStyle.getPropertyValue('padding-bottom'))
   },
   methods: {
+    emitUpdate(prop) {
+      this.$emit(`update:${prop}`, this.state[prop])
+    },
+
     getCssStyle() {
       let style = {
         'height': this.size + 'px',
@@ -347,6 +351,8 @@ export default {
 
       this.state.left = left
       this.state.top = top
+      this.emitUpdate('left')
+      this.emitUpdate('top')
       this.$emit('dragmove')
     },
     startDrag(event) {
