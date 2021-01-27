@@ -52,12 +52,34 @@ export default {
 }
 
 .panel[dragging][snapped] {
-  box-shadow: 0 1rem 3rem rgba(200,0,0,.3);
+  box-shadow: 0 1rem 3rem rgba(200,200,0,.3);
 }
 
 .panel[dragging][snapped][snaps*="vertical-center"],
 .panel[dragging][snapped][snaps*="horizontal-center"] {
   box-shadow: 0 1rem 3rem rgba(0,0,200,.3);
+}
+
+.panel[dragging][snapped][snaps*="vertical-center"][snaps*="horizontal-center"] {
+  box-shadow: 0 1rem 3rem rgba(0,200,200,.3);
+}
+
+.panel[dragging][snapped][snaps*="top-edge"][snaps*="left-edge"],
+.panel[dragging][snapped][snaps*="top-edge"][snaps*="right-edge"],
+.panel[dragging][snapped][snaps*="bottom-edge"][snaps*="left-edge"],
+.panel[dragging][snapped][snaps*="bottom-edge"][snaps*="right-edge"] {
+  box-shadow: 0 1rem 3rem rgba(200,0,0,.3);
+}
+
+.panel[dragging][snapped][snaps*="vertical-center"][snaps*="top-edge"],
+.panel[dragging][snapped][snaps*="vertical-center"][snaps*="left-edge"],
+.panel[dragging][snapped][snaps*="vertical-center"][snaps*="right-edge"],
+.panel[dragging][snapped][snaps*="vertical-center"][snaps*="bottom-edge"],
+.panel[dragging][snapped][snaps*="horizontal-center"][snaps*="top-edge"],
+.panel[dragging][snapped][snaps*="horizontal-center"][snaps*="left-edge"],
+.panel[dragging][snapped][snaps*="horizontal-center"][snaps*="right-edge"],
+.panel[dragging][snapped][snaps*="horizontal-center"][snaps*="bottom-edge"] {
+  box-shadow: 0 1rem 3rem rgba(200,0,200,.3);
 }
 
 .panel[dragging]:not([snapped]) {
