@@ -94,12 +94,12 @@ export default {
 }
 
 .text {
-  display: flex;
+  display: inline-flex;
   height: 100%;
   align-items: center;
 
   color: white;
-  font-size: 2em;
+  font-size: 20px;
   font-weight: bold;
   text-align: center;
 }
