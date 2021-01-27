@@ -106,7 +106,7 @@ export default {
     snapThreshold: {
       type: Number,
       required: false,
-      default: 15,
+      default: 10,
     },
   },
   data() {

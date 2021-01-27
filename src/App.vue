@@ -3,7 +3,7 @@
     <panel
       class="panel"
       v-bind.sync="state"
-      :snap="snap"
+      :snap="true"
     ></panel>
   </div>
 </template>
@@ -32,7 +32,6 @@ export default {
         ],
         locked: false,
       },
-      snap: true,
     }
   }
 }
@@ -42,38 +41,38 @@ export default {
 .panel {
   background-color: #888;
   border-radius: .25rem;
-  box-shadow: 0 .5rem 1rem rgba(0,0,0,.15);
+  box-shadow: 0 0 1rem rgba(0,0,0,.15);
   padding: 8px;
 
   transition-property: box-shadow, transform, background-color;
-  transition-duration: 200ms;
+  transition-duration: 300ms;
 }
 
 .panel[dragging] {
   cursor: grabbing;
   background-color: #777;
-  box-shadow: 0 1rem 3rem rgba(0,0,0,.3);
+  box-shadow: 0 0 3rem rgba(0,0,0,.3);
   transform: scale(1.05);
 }
 
 .panel[dragging][snapped] {
-  box-shadow: 0 1rem 3rem rgba(200,200,0,.3);
+  box-shadow: 0 0 3rem rgba(200,200,0,.3);
 }
 
 .panel[dragging][snapped][snaps*="vertical-center"],
 .panel[dragging][snapped][snaps*="horizontal-center"] {
-  box-shadow: 0 1rem 3rem rgba(0,0,200,.3);
+  box-shadow: 0 0 3rem rgba(0,0,200,.3);
 }
 
 .panel[dragging][snapped][snaps*="vertical-center"][snaps*="horizontal-center"] {
-  box-shadow: 0 1rem 3rem rgba(0,200,200,.3);
+  box-shadow: 0 0 3rem rgba(0,200,200,.3);
 }
 
 .panel[dragging][snapped][snaps*="top-edge"][snaps*="left-edge"],
 .panel[dragging][snapped][snaps*="top-edge"][snaps*="right-edge"],
 .panel[dragging][snapped][snaps*="bottom-edge"][snaps*="left-edge"],
 .panel[dragging][snapped][snaps*="bottom-edge"][snaps*="right-edge"] {
-  box-shadow: 0 1rem 3rem rgba(200,0,0,.3);
+  box-shadow: 0 0 3rem rgba(200,0,0,.3);
 }
 
 .panel[dragging][snapped][snaps*="vertical-center"][snaps*="top-edge"],
@@ -84,10 +83,10 @@ export default {
 .panel[dragging][snapped][snaps*="horizontal-center"][snaps*="left-edge"],
 .panel[dragging][snapped][snaps*="horizontal-center"][snaps*="right-edge"],
 .panel[dragging][snapped][snaps*="horizontal-center"][snaps*="bottom-edge"] {
-  box-shadow: 0 1rem 3rem rgba(200,0,200,.3);
+  box-shadow: 0 0 3rem rgba(200,0,200,.3);
 }
 
 .panel[dragging]:not([snapped]) {
-  box-shadow: 0 1rem 3rem rgba(0,200,0,.3);
+  box-shadow: 0 0 3rem rgba(0,200,0,.3);
 }
 </style>
