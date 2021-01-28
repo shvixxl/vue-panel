@@ -33,12 +33,22 @@ export const snaps = {
 export default {
   props: {
     // Position
-    x: {
+    left: {
       type: Number,
       required: false,
       default: undefined,
     },
-    y: {
+    right: {
+      type: Number,
+      required: false,
+      default: undefined,
+    },
+    top: {
+      type: Number,
+      required: false,
+      default: undefined,
+    },
+    bottom: {
       type: Number,
       required: false,
       default: undefined,
@@ -104,8 +114,10 @@ export default {
     return {
       state: {
         // Position
-        x: this.x,
-        y: this.y,
+        left: this.left,
+        right: this.right,
+        top: this.top,
+        bottom: this.bottom,
 
         // Size
         size: this.size,
@@ -164,7 +176,11 @@ export default {
       } else if (this.isSnapped(snaps.rightEdge)) {
         style['right'] = 0
       } else {
-        style['left'] = this.state.x + 'px'
+        if (this.state.left <= this.state.right) {
+          style['left'] = this.state.left + 'px'
+        } else {
+          style['right'] = this.state.right + 'px'
+        }
       }
 
       if (this.isSnapped(snaps.verticalCenter)) {
@@ -175,7 +191,11 @@ export default {
       } else if (this.isSnapped(snaps.bottomEdge)) {
         style['bottom'] = 0
       } else {
-        style['top'] = this.state.y + 'px'
+        if (this.state.top <= this.state.bottom) {
+          style['top'] = this.state.top + 'px'
+        } else {
+          style['bottom'] = this.state.bottom + 'px'
+        }
       }
 
       return style
@@ -324,11 +344,16 @@ export default {
         [ x, y ] = this.trySnap(x, y)
       }
 
-      this.state.x = x
-      this.state.y = y
+      this.state.left = x
+      this.state.right = document.documentElement.clientWidth - x - this.width
 
-      this.emitUpdate('x')
-      this.emitUpdate('y')
+      this.state.top = y
+      this.state.bottom = document.documentElement.clientHeight - y - this.height
+
+      this.emitUpdate('left')
+      this.emitUpdate('right')
+      this.emitUpdate('top')
+      this.emitUpdate('bottom')
       
       this.$emit('dragmove')
     },

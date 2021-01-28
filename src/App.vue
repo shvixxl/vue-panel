@@ -22,8 +22,10 @@ export default {
   data() {
     return {
       state: {
-        x: 0,
-        y: 0,
+        top: 0,
+        left: 0,
+        bottom: undefined,
+        right: undefined,
         
         size: 64,
 
