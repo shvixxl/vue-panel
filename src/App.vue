@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div id="panel-area">
     <panel
       class="panel"
       v-bind.sync="state"
@@ -26,8 +26,6 @@ export default {
         left: 0,
         bottom: undefined,
         right: undefined,
-        
-        size: 64,
 
         snaps: [
           snaps.horizontalCenter,
@@ -42,6 +40,16 @@ export default {
 </script>
 
 <style>
+
+#panel-area {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  margin: 10px;
+}
+
 .panel {
   background-color: gray;
   border-radius: .5rem;

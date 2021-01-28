@@ -5,13 +5,17 @@ export function getCursorPositionFromEvent(event) {
   ]
 }
 
-export function limitPosition(x, y, width=0, height=0) {
-  const clientWidth = document.documentElement.clientWidth
-  const clientHeight = document.documentElement.clientHeight
-
+export function limitPosition(
+  elementX,
+  elementY,
+  elementWidth,
+  elementHeight,
+  parentWidth,
+  parentHeight,
+) {
   return [
-    Math.min(Math.max(x, 0), clientWidth - width),
-    Math.min(Math.max(y, 0), clientHeight - height),
+    Math.min(Math.max(elementX, 0), parentWidth - elementWidth),
+    Math.min(Math.max(elementY, 0), parentHeight - elementHeight),
   ]
 }
   
