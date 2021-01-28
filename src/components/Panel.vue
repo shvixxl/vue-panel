@@ -114,7 +114,6 @@ export default {
         locked: this.locked,
       },
 
-      resizeObserver: undefined,
       height: undefined,
       width: undefined,
 
