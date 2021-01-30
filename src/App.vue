@@ -1,11 +1,13 @@
 <template>
   <div>
     <panel
+      v-for="(panel, index) in panels"
+      :key="panel.id"
       class="panel"
-      v-bind.sync="state"
+      v-bind.sync="panels[index]"
       :snap="true"
     >
-      <div class="text">DRAG ME</div>
+      <div class="text">PANEL {{ index }}</div>
     </panel>
   </div>
 </template>
@@ -20,19 +22,68 @@ export default {
   },
   data() {
     return {
-      state: {
-        top: 0,
-        left: 0,
-        bottom: undefined,
-        right: undefined,
+      panels: [
+        {
+          id: 0,
 
-        snaps: [
-          'horizontal-center',
-          'vertical-center',
-        ],
-        
-        locked: false,
-      },
+          top: undefined,
+          left: undefined,
+          bottom: undefined,
+          right: undefined,
+
+          snaps: [
+            'top-edge',
+            'left-edge',
+          ],
+          
+          locked: false,
+        },
+        {
+          id: 1,
+
+          top: undefined,
+          left: undefined,
+          bottom: undefined,
+          right: undefined,
+
+          snaps: [
+            'top-edge',
+            'right-edge',
+          ],
+          
+          locked: false,
+        },
+        {
+          id: 2,
+
+          top: undefined,
+          left: undefined,
+          bottom: undefined,
+          right: undefined,
+
+          snaps: [
+            'bottom-edge',
+            'left-edge',
+          ],
+          
+          locked: false,
+        },
+        {
+          id: 3,
+
+          top: undefined,
+          left: undefined,
+          bottom: undefined,
+          right: undefined,
+
+          snaps: [
+            'bottom-edge',
+            'right-edge',
+          ],
+          
+          locked: false,
+        },
+      ],
     }
   }
 }
@@ -45,6 +96,7 @@ export default {
   border-radius: .5rem;
   box-shadow: 0 0 1rem rgba(0,0,0,.15);
   padding: 8px;
+  margin: 8px;
   transition-property: box-shadow, transform, background-color;
   transition-duration: 300ms;
 }
@@ -92,13 +144,16 @@ export default {
 }
 
 .text {
-  display: inline-flex;
-  height: 100%;
   align-items: center;
 
   color: white;
   font-size: 20px;
   font-weight: bold;
   text-align: center;
+}
+
+.small-text {
+  font-size: 14px;
+  font-weight: normal;
 }
 </style>
