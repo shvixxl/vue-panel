@@ -1,11 +1,15 @@
 <template>
   <div>
+    <transition name="fade">
+      <div v-if="message.show" class="message">They're draggable btw.</div>
+    </transition>
     <panel
       v-for="(panel, index) in panels"
       :key="panel.id"
       class="panel"
       v-bind.sync="panels[index]"
       :snap="true"
+      @dragstart.once="message.show = false"
     >
       <div class="text">PANEL {{ index }}</div>
     </panel>
@@ -22,6 +26,9 @@ export default {
   },
   data() {
     return {
+      message: {
+        show: true,
+      },
       panels: [
         {
           id: 0,
@@ -91,6 +98,10 @@ export default {
 
 <style>
 
+html {
+  font-family: monospace;
+}
+
 .panel {
   background-color: gray;
   border-radius: .5rem;
@@ -143,17 +154,39 @@ export default {
   box-shadow: 0 0 3rem rgba(0,200,0,.3);
 }
 
-.text {
-  align-items: center;
+.message {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-right: -50%;
+  transform: translate(-50%, -50%);
 
+  max-width: 75%;
+
+  color: #333;
+  font-weight: bold;
+  font-size: 3em;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.text {
   color: white;
-  font-size: 20px;
+  font-size: 1.2em;
   font-weight: bold;
   text-align: center;
+  vertical-align: middle;
 }
 
 .small-text {
   font-size: 14px;
   font-weight: normal;
+}
+
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 1s;
+}
+.fade-leave-to {
+  opacity: 0;
 }
 </style>
