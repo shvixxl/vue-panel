@@ -243,7 +243,7 @@ export default {
       // Horizontal Center
       if (this.canSnap(snaps.horizontalCenter)) {
         const panelMiddle = x + (this.width / 2)
-        const viewMiddle = this.$el.parentNode.clientWidth / 2
+        const viewMiddle = document.documentElement.clientWidth / 2
         if (checkThreshold(panelMiddle, viewMiddle)) {
           finalX = viewMiddle - (this.width / 2)
           this.addSnap(snaps.horizontalCenter)
@@ -255,7 +255,7 @@ export default {
       // Vertical Center
       if (this.canSnap(snaps.verticalCenter)) {
         const panelMiddle = y + (this.height / 2)
-        const viewMiddle = this.$el.parentNode.clientHeight / 2
+        const viewMiddle = document.documentElement.clientHeight / 2
         if (checkThreshold(panelMiddle, viewMiddle)) {
           finalY = viewMiddle - (this.height / 2)
           this.addSnap(snaps.verticalCenter)
@@ -291,7 +291,7 @@ export default {
       // Bottom Edge
       if (this.canSnap(snaps.bottomEdge)) {
         const panelEdge = y + this.height
-        const viewEdge = this.$el.parentNode.clientHeight
+        const viewEdge = document.documentElement.clientHeight
         if (checkThreshold(panelEdge, viewEdge)) {
           finalY = viewEdge - this.height
           this.addSnap(snaps.bottomEdge)
@@ -303,7 +303,7 @@ export default {
       // Right Edge
       if (this.canSnap(snaps.rightEdge)) {
         const panelEdge = x + this.width
-        const viewEdge = this.$el.parentNode.clientWidth
+        const viewEdge = document.documentElement.clientWidth
         if (checkThreshold(panelEdge, viewEdge)) {
           finalX = viewEdge - this.width
           this.addSnap(snaps.rightEdge)
@@ -320,8 +320,8 @@ export default {
         ...this.getCursor(event),
         this.width,
         this.height,
-        this.$el.parentNode.clientWidth,
-        this.$el.parentNode.clientHeight,
+        document.documentElement.clientWidth,
+        document.documentElement.clientHeight,
       )
 
       if (this.canSnap()) {
@@ -329,10 +329,10 @@ export default {
       }
 
       this.state.left = x
-      this.state.right = this.$el.parentNode.clientWidth - x - this.width
+      this.state.right = document.documentElement.clientWidth - x - this.width
 
       this.state.top = y
-      this.state.bottom = this.$el.parentNode.clientHeight - y - this.height
+      this.state.bottom = document.documentElement.clientHeight - y - this.height
 
       this.emitUpdate('left')
       this.emitUpdate('right')
@@ -373,7 +373,7 @@ export default {
 
 <style scoped>
 .panel {
-  position: absolute;
+  position: fixed;
 }
 
 .panel[draggable] {

@@ -1,5 +1,5 @@
 <template>
-  <div id="panel-area">
+  <div>
     <panel
       class="panel"
       v-bind.sync="state"
@@ -12,7 +12,6 @@
 
 <script>
 import Panel from './components/Panel.vue'
-import { snaps } from './components/Panel.vue'
 
 export default {
   name: 'App',
@@ -28,8 +27,8 @@ export default {
         right: undefined,
 
         snaps: [
-          snaps.horizontalCenter,
-          snaps.verticalCenter,
+          'horizontal-center',
+          'vertical-center',
         ],
         
         locked: false,
@@ -41,21 +40,11 @@ export default {
 
 <style>
 
-#panel-area {
-  position: absolute;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  right: 0;
-  margin: 10px;
-}
-
 .panel {
   background-color: gray;
   border-radius: .5rem;
   box-shadow: 0 0 1rem rgba(0,0,0,.15);
   padding: 8px;
-
   transition-property: box-shadow, transform, background-color;
   transition-duration: 300ms;
 }
