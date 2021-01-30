@@ -233,7 +233,9 @@ export default {
       return result
     },
     isSnapped(snap=undefined) {
-      if (snap === undefined) {
+      if (!this.canSnap()) {
+        return false
+      } else if (snap === undefined) {
         return this.state.snaps.size !== 0
       }
       return this.state.snaps.has(snap)
