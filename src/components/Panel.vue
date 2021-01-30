@@ -114,8 +114,9 @@ export default {
         locked: this.locked,
       },
 
-      height: undefined,
+      sizeObserver: undefined,
       width: undefined,
+      height: undefined,
 
       draggable: !this.locked,
       dragging: false,
@@ -132,15 +133,30 @@ export default {
     },
   },
   mounted() {
-    const style = window.getComputedStyle(this.$refs.panel)
+    const { width, height } = this.$refs.panel.getBoundingClientRect()
 
-    this.width = parseFloat(style.getPropertyValue('width')) +
-      parseFloat(style.getPropertyValue('padding-left')) +
-      parseFloat(style.getPropertyValue('padding-right'))
+    this.width = width
+    this.height = height
 
-    this.height = parseFloat(style.getPropertyValue('height')) +
-      parseFloat(style.getPropertyValue('padding-top')) +
-      parseFloat(style.getPropertyValue('padding-bottom'))
+    const callback = (mutations => {
+      for (const mutation of mutations) {
+        if (mutation.type === 'attributes') {
+          const { width, height } = mutation.target.getBoundingClientRect()
+
+          this.width = width
+          this.height = height
+        }
+      }
+    })
+
+    this.sizeObserver = new MutationObserver(callback)
+
+    this.sizeObserver.observe(this.$refs.panel, {
+      attributes: true,
+    })
+  },
+  destroyed() {
+    this.sizeObserver.disconnect()
   },
   methods: {
     emitUpdate(prop) {
