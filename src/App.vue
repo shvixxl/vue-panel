@@ -98,8 +98,10 @@ export default {
 
 <style>
 
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@700;800&display=swap');
+
 html {
-  font-family: monospace;
+  font-family: 'JetBrains Mono', monospace;
 }
 
 .panel {
@@ -164,7 +166,7 @@ html {
   max-width: 75%;
 
   color: #333;
-  font-weight: bold;
+  font-weight: 800;
   font-size: 3em;
   text-align: center;
   text-transform: uppercase;
