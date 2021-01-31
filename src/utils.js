@@ -2,11 +2,20 @@ export function getCursorPositionFromEvent(event) {
   const x = event.touches ? event.touches[0].clientX : event.clientX
   const y = event.touches ? event.touches[0].clientY : event.clientY
 
-  return [ x, y ]
+  return { x, y }
+}
+
+export function getElementPosition(element) {
+  const computedStyle = window.getComputedStyle(element)
+
+  const left = element.offsetLeft - parseFloat(computedStyle.getPropertyValue('margin-left'))
+  const top = element.offsetTop - parseFloat(computedStyle.getPropertyValue('margin-top'))
+
+  return { left, top }
 }
 
 export function getElementSize(element) {
-  const computedStyle = window.getComputedStyle(target)
+  const computedStyle = window.getComputedStyle(element)
 
   const widthProps = [
     'margin-left',
@@ -31,7 +40,7 @@ export function getElementSize(element) {
   const width = widthProps.reduce(callback, 0)
   const height = heightProps.reduce(callback, 0)
 
-  return [ width, height ]
+  return { width, height }
 }
 
 export function limitPosition(
@@ -45,5 +54,5 @@ export function limitPosition(
   const x = Math.min(Math.max(elementX, 0), parentWidth - elementWidth)
   const y = Math.min(Math.max(elementY, 0), parentHeight - elementHeight)
 
-  return [ x, y ]
+  return { x, y }
 }
