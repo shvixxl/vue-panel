@@ -2,7 +2,7 @@
   <div
     ref="panel"
     class="panel"
-    :style="getCssStyle()"
+    :style="cssStyle"
     :draggable="draggable"
     :dragging="dragging"
     :snapped="isSnapped()"
@@ -17,6 +17,8 @@
 <script>
 import {
   getCursorPositionFromEvent,
+  getElementPosition,
+  getElementSize,
   limitPosition,
 } from '../utils'
 
@@ -122,10 +124,47 @@ export default {
       dragging: false,
       
       cursor: {
-        x: undefined,
-        y: undefined,
+        dx: undefined,
+        dy: undefined,
       }
     }
+  },
+  computed: {
+    cssStyle() {
+      let style = {}
+
+      // X-axis position
+      if (this.isSnapped(snaps.horizontalCenter)) {
+        style['left'] = `calc(50% - ${this.width / 2}px)`
+      } else if (this.isSnapped(snaps.leftEdge)) {
+        style['left'] = 0
+      } else if (this.isSnapped(snaps.rightEdge)) {
+        style['right'] = 0
+      } else {
+        if (this.state.left <= this.state.right) {
+          style['left'] = this.state.left + 'px'
+        } else {
+          style['right'] = this.state.right + 'px'
+        }
+      }
+
+      // Y-axis position
+      if (this.isSnapped(snaps.verticalCenter)) {
+        style['top'] = `calc(50% - ${this.height / 2}px)`
+      } else if (this.isSnapped(snaps.topEdge)) {
+        style['top'] = 0
+      } else if (this.isSnapped(snaps.bottomEdge)) {
+        style['bottom'] = 0
+      } else {
+        if (this.state.top <= this.state.bottom) {
+          style['top'] = this.state.top + 'px'
+        } else {
+          style['bottom'] = this.state.bottom + 'px'
+        }
+      }
+
+      return style
+    },
   },
   watch: {
     'state.snaps': function(value, newValue) {
@@ -133,21 +172,15 @@ export default {
     },
   },
   mounted() {
-    const { width, height } = this.$refs.panel.getBoundingClientRect()
+    ({ width: this.width, height: this.height } = getElementSize(this.$refs.panel))
 
-    this.width = width
-    this.height = height
-
-    const callback = (mutations => {
+    const callback = (mutations) => {
       for (const mutation of mutations) {
         if (mutation.type === 'attributes') {
-          const { width, height } = mutation.target.getBoundingClientRect()
-
-          this.width = width
-          this.height = height
+          ({ width: this.width, height: this.height } = getElementSize(this.$refs.panel))
         }
       }
-    })
+    }
 
     this.sizeObserver = new MutationObserver(callback)
 
@@ -163,50 +196,15 @@ export default {
       this.$emit(`update:${prop}`, this.state[prop])
     },
 
-    getCssStyle() {
-      let style = {}
-
-      if (this.isSnapped(snaps.horizontalCenter)) {
-        style['left'] = '50%'
-        style['margin-left'] = -(this.width / 2) + 'px'
-      } else if (this.isSnapped(snaps.leftEdge)) {
-        style['left'] = 0
-      } else if (this.isSnapped(snaps.rightEdge)) {
-        style['right'] = 0
-      } else {
-        if (this.state.left <= this.state.right) {
-          style['left'] = this.state.left + 'px'
-        } else {
-          style['right'] = this.state.right + 'px'
-        }
-      }
-
-      if (this.isSnapped(snaps.verticalCenter)) {
-        style['top'] = '50%'
-        style['margin-top'] = -(this.height / 2) + 'px'
-      } else if (this.isSnapped(snaps.topEdge)) {
-        style['top'] = 0
-      } else if (this.isSnapped(snaps.bottomEdge)) {
-        style['bottom'] = 0
-      } else {
-        if (this.state.top <= this.state.bottom) {
-          style['top'] = this.state.top + 'px'
-        } else {
-          style['bottom'] = this.state.bottom + 'px'
-        }
-      }
-
-      return style
-    },
-
     setCursor(event) {
-      const [ x, y ] = getCursorPositionFromEvent(event)
+      const { x, y } = getCursorPositionFromEvent(event)
+      const { left, top } = getElementPosition(this.$refs.panel)
 
-      this.cursor.dx = x - this.$refs.panel.offsetLeft
-      this.cursor.dy = y - this.$refs.panel.offsetTop
+      this.cursor.dx = x - left
+      this.cursor.dy = y - top
     },
     getCursor(event) {
-      const [ x, y ] = getCursorPositionFromEvent(event)
+      const { x, y } = getCursorPositionFromEvent(event)
 
       return [
         x - this.cursor.dx,
@@ -334,7 +332,7 @@ export default {
     },
 
     doDrag(event) {
-      let [ x, y ] = limitPosition(
+      let { x, y } = limitPosition(
         ...this.getCursor(event),
         this.width,
         this.height,
@@ -347,10 +345,10 @@ export default {
       }
 
       this.state.left = x
-      this.state.right = document.documentElement.clientWidth - x - this.width
+      this.state.right = document.documentElement.clientWidth - (x + this.width)
 
       this.state.top = y
-      this.state.bottom = document.documentElement.clientHeight - y - this.height
+      this.state.bottom = document.documentElement.clientHeight - (y + this.height)
 
       this.emitUpdate('left')
       this.emitUpdate('right')
