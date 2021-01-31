@@ -116,7 +116,6 @@ export default {
         locked: this.locked,
       },
 
-      sizeObserver: undefined,
       width: undefined,
       height: undefined,
 
@@ -172,28 +171,31 @@ export default {
     },
   },
   mounted() {
-    ({ width: this.width, height: this.height } = getElementSize(this.$refs.panel))
+    this.updateSize()
 
     const callback = (mutations) => {
       for (const mutation of mutations) {
         if (mutation.type === 'attributes') {
-          ({ width: this.width, height: this.height } = getElementSize(this.$refs.panel))
+          this.updateSize()
         }
       }
     }
 
-    this.sizeObserver = new MutationObserver(callback)
+    const observer = new MutationObserver(callback)
 
-    this.sizeObserver.observe(this.$refs.panel, {
+    observer.observe(this.$refs.panel, {
       attributes: true,
     })
-  },
-  destroyed() {
-    this.sizeObserver.disconnect()
+
+    this.$once('hook:beforeDestroy', observer.disconnect())
   },
   methods: {
     emitUpdate(prop) {
       this.$emit(`update:${prop}`, this.state[prop])
+    },
+
+    updateSize() {
+      ({ width: this.width, height: this.height } = getElementSize(this.$refs.panel))
     },
 
     setCursor(event) {
