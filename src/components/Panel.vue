@@ -35,21 +35,25 @@ export const snaps = {
 export default {
   props: {
     // Position
+
     left: {
       type: Number,
       required: false,
       default: undefined,
     },
+
     right: {
       type: Number,
       required: false,
       default: undefined,
     },
+
     top: {
       type: Number,
       required: false,
       default: undefined,
     },
+
     bottom: {
       type: Number,
       required: false,
@@ -57,6 +61,7 @@ export default {
     },
 
     // Snaps
+
     snaps: {
       type: Array,
       required: false,
@@ -72,15 +77,9 @@ export default {
         return true
       }
     },
-    
-    // State
-    locked: {
-      type: Boolean,
-      required: false,
-      default: true,
-    },
 
     // Snap options
+
     snap: {
       type: [Boolean, Array],
       required: false,
@@ -96,12 +95,22 @@ export default {
         return true
       }
     },
+
     snapThreshold: {
       type: Number,
       required: false,
       default: 10,
     },
+
+    // State options
+
+    locked: {
+      type: Boolean,
+      required: false,
+      default: true,
+    },
   },
+
   data() {
     return {
       state: {
@@ -121,13 +130,14 @@ export default {
 
       draggable: !this.locked,
       dragging: false,
-      
+
       cursor: {
         dx: undefined,
         dy: undefined,
       }
     }
   },
+
   computed: {
     cssStyle() {
       let style = {}
@@ -165,11 +175,13 @@ export default {
       return style
     },
   },
+
   watch: {
     'state.snaps': function(value, newValue) {
       this.$emit('update:snaps', Array.from(newValue))
     },
   },
+
   mounted() {
     this.updateSize()
 
@@ -189,6 +201,7 @@ export default {
 
     this.$once('hook:beforeDestroy', observer.disconnect())
   },
+
   methods: {
     emitUpdate(prop) {
       this.$emit(`update:${prop}`, this.state[prop])
@@ -205,6 +218,7 @@ export default {
       this.cursor.dx = x - left
       this.cursor.dy = y - top
     },
+
     getCursor(event) {
       const { x, y } = getCursorPositionFromEvent(event)
 
@@ -213,7 +227,7 @@ export default {
         y - this.cursor.dy,
       ]
     },
-    
+
     // Snap helpers
     canSnap(snap=undefined) {
       if (snap === undefined) {
@@ -232,6 +246,7 @@ export default {
 
       return result
     },
+
     isSnapped(snap=undefined) {
       if (!this.canSnap()) {
         return false
@@ -240,16 +255,19 @@ export default {
       }
       return this.state.snaps.has(snap)
     },
+
     addSnap(snap) {
       this.state.snaps.add(snap)
       this.state.snaps = new Set(this.state.snaps)
       this.$emit('snapped', snap)
     },
+
     deleteSnap(snap) {
       this.state.snaps.delete(snap)
       this.state.snaps = new Set(this.state.snaps)
       this.$emit('unsnapped', snap)
     },
+
     trySnap(x, y) {
       const checkThreshold = (a, b) => {
         return Math.abs(a - b) <= this.snapThreshold
@@ -356,9 +374,10 @@ export default {
       this.emitUpdate('right')
       this.emitUpdate('top')
       this.emitUpdate('bottom')
-      
+
       this.$emit('dragmove')
     },
+
     startDrag(event) {
       if (this.draggable) {
         this.dragging = true
@@ -374,12 +393,13 @@ export default {
         this.$emit('dragstart')
       }
     },
+
     stopDrag() {
       this.dragging = false
 
       document.onmousemove = null
       document.onmouseup = null
-      
+
       document.ontouchmove = null
       document.ontouchend = null
 
